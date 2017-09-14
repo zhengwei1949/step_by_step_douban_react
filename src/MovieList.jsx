@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import fetchJsonp from 'fetch-jsonp';
+import {browserHistory} from 'react-router';
 
-export default class In_theaters extends Component {
+export default class MovieList extends Component {
     constructor(props){
         super(props);
         this.state = {
-            subjects:[]
+            subjects:[],
+            total:0,
+            count:0
         }
     }
     componentDidMount() {
@@ -13,18 +16,32 @@ export default class In_theaters extends Component {
         // 2 --> 5-9
         // 3 --> 10-14
         // n --> (n-1)*5 - (n-1)*5+4    
+        this.fetchData();
+    }
+    fetchData=()=>{
         let start = (parseInt(this.props.params.page) - 1) * 5;    
-        console.log(start);
-        fetchJsonp(`https://api.douban.com/v2/movie/in_theaters?start=${start}&count=5`)
+        fetchJsonp(`http://localhost/mylist.php?start=${start}&count=5`)
         .then((response)=>{
           return response.json();
         }).then((json)=>{
             this.setState({
-                subjects:json.subjects
+                subjects:json.subjects,
+                total:json.total,
+                count:json.count,
+                maxPage:Math.ceil(json.total / json.count)
             })
         }).catch(function(ex) {
           console.log('parsing failed', ex)
         })
+    }
+    componentDidUpdate() {
+        this.fetchData();
+    }
+    goPage = (newPage)=>{
+        if(newPage === 0)newPage = 1;
+        if(newPage > this.state.maxPage)newPage = this.state.maxPage;
+        console.log(this.props.params)
+        browserHistory.push(`/movie/${this.props.params.movieType}/${newPage}`)
     }
     render() {
         return (
@@ -47,9 +64,9 @@ export default class In_theaters extends Component {
                     }
                 </ul>
                 <div className="paging">
-                    <label>总共：0条记录,第0/0页;</label>
-                    <button className="prev disable ">上一页</button>
-                    <button className="next">下一页</button>
+                    <label>总共：{this.state.total}条记录,第{this.props.params.page}/{this.state.maxPage}页;</label>
+                    <button className={"prev" + ' ' +(this.props.params.page-0===1?'disable':'')} onClick={this.goPage.bind(this,this.props.params.page-1)}>上一页</button>
+                    <button className={"next" + ' ' + (this.props.params.page-0=== this.state.maxPage?'disable':'')} onClick={this.goPage.bind(this,this.props.params.page-0+1)}>下一页</button>
                 </div>
             </div>
         )

@@ -18,9 +18,9 @@ class App extends Component {
           <nav className="nav">
             <ul>
               <li className="active"><Link to="/home">首页</Link></li>
-              <li><Link to="/in_theaters">正在热映</Link></li>
-              <li><Link to="/coming_soon">即将上映</Link></li>
-              <li><Link to="/top250">Top250</Link></li>
+              <li><Link to="/movie/in_theaters">正在热映</Link></li>
+              <li><Link to="/movie/coming_soon">即将上映</Link></li>
+              <li><Link to="/movie/top250">Top250</Link></li>
             </ul>
           </nav>
         </div>
